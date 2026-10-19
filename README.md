@@ -1,4 +1,77 @@
-# consultaProductos
+# MCP BdB 360
+
+Servidor MCP (Model Context Protocol) construido con FastMCP que permite a
+agentes y clientes MCP invocar dos servicios SOAP: el Transaccionador v4 y
+la consulta de productos de un cliente. Las herramientas se registran en
+[mcp_server.py](./mcp_server.py) y se publican mediante Streamable HTTP desde
+[app.py](./app.py).
+
+## Herramientas y parametros
+
+Todos los parametros de las herramientas son obligatorios y de tipo texto
+(`string`). Los destinos y la configuracion tecnica se obtienen en el servidor;
+no son argumentos de las llamadas.
+
+### txdor_tranzar
+
+Ejecuta la operacion `tranzar` del Transaccionador v4 para consultar una cuenta.
+Su cliente SOAP esta en [services/txdor_client.py](./services/txdor_client.py).
+
+| Parametro | Tipo | Descripcion |
+| --- | --- | --- |
+| `tipo_cuenta` | `string` | Codigo de cuenta: `ST` para ahorros, `IM` para corriente o `AM` para creditos ALS. Se eliminan espacios al inicio y al final y se convierte a mayusculas. |
+| `numero_cuenta` | `string` | Numero de cuenta no vacio. Se eliminan espacios al inicio y al final. Enviarlo como texto para preservar ceros iniciales. |
+
+Ejemplo con datos ficticios:
+
+```json
+{
+  "name": "txdor_tranzar",
+  "arguments": {
+    "tipo_cuenta": "ST",
+    "numero_cuenta": "000123456"
+  }
+}
+```
+
+### consultaProductos
+
+Consulta los productos asociados a la identificacion de un cliente.
+Su cliente SOAP esta en
+[services/productos_client.py](./services/productos_client.py).
+
+| Parametro | Tipo | Descripcion |
+| --- | --- | --- |
+| `aa_nit` | `string` | Identificacion no vacia, formada unicamente por digitos ASCII, sin espacios, puntos ni guiones. Preserva ceros iniciales. |
+
+Ejemplo con datos ficticios:
+
+```json
+{
+  "name": "consultaProductos",
+  "arguments": {
+    "aa_nit": "000123"
+  }
+}
+```
+
+### Respuesta de las herramientas
+
+Ambas devuelven un objeto con el estado HTTP y la respuesta XML original del
+servicio. No transforman el XML en una lista normalizada de cuentas o productos.
+
+```json
+{
+  "status_code": 200,
+  "response": "<XML SOAP original del servicio>"
+}
+```
+
+Las identificaciones, cuentas y respuestas deben tratarse como datos sensibles.
+El consumidor debe estar autorizado para realizar la consulta; no registrar esos
+datos en logs.
+
+## Detalle de consultaProductos
 
 Herramienta registrada en [mcp_server.py](./mcp_server.py), con cliente SOAP en
 [services/productos_client.py](./services/productos_client.py).
