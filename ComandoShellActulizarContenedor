@@ -1,8 +1,8 @@
 # VARIABLES (ajusta a tu entorno)
-ACR_NAME=aqadacrmcponbasepr
-IMAGE_NAME=mcp-onbase
-APP_NAME=aqad-app-mcp-onbase-pr
-RG=Bdb-PR-RG-AQAD-FQ-AGENT-IAC
+ACR_NAME=tasksmcpacr
+IMAGE_NAME=mcp-360
+APP_NAME=aqad-app-mcp-sb
+RG=BdB-AQH-SB
 ENV_NAME=
 
 # 1️⃣ Login
@@ -18,7 +18,8 @@ az acr build \
 az containerapp update \
   --name $APP_NAME \
   --resource-group $RG \
-  --image $ACR_NAME.azurecr.io/$IMAGE_NAME:$TAG
+  --image $ACR_NAME.azurecr.io/$IMAGE_NAME:$TAG \
+  --target-port 8082
 
 # 4️⃣ Ver revisiones (opcional)
 az containerapp revision list \
@@ -28,7 +29,7 @@ az containerapp revision list \
 
   version 2
 
-  TAG=25082026v1 \
+  TAG=08092026v4 \
 
 az acr build \
   --registry $ACR_NAME \
@@ -39,7 +40,11 @@ az acr build \
 az containerapp update \
   --name $APP_NAME \
   --resource-group $RG \
-  --image $ACR_NAME.azurecr.io/$IMAGE_NAME:$TAG
+  --image $ACR_NAME.azurecr.io/$IMAGE_NAME:$TAG \
+  
+  
+  
+  --target-port 8082
 
 
 az containerapp show \
@@ -55,3 +60,10 @@ az containerapp revision list \
   --resource-group "$RG" \
   --query "[].{revision:name, active:properties.active, runningState:properties.runningState, healthState:properties.healthState, replicas:properties.replicas, image:properties.template.containers[0].image}" \
   -o table
+
+
+
+az containerapp logs show \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --tail 100    

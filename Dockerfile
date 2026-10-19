@@ -13,6 +13,6 @@ RUN python -m pip install --upgrade pip && \
 
 COPY . ./
 
-EXPOSE 8080
+EXPOSE 8082
 
-CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8082"]
